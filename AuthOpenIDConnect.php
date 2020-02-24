@@ -32,6 +32,9 @@
                 'label' => 'Redirect URL',
                 'help' => 'The Redirect URL is automatically set on plugin activation.',
                 'default' => '',
+                'htmlOptions' => [
+                    'readOnly' => true,          
+                ]
             ]
         ];
         static protected $description = 'OpenID Connect Authenticaton Plugin for LimeSurvey.';
