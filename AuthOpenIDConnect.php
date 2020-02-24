@@ -46,7 +46,8 @@
 
         public function beforeActivate(){
             $baseURL = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}";
-            $this->set('redirectURL', $baseURL . '/index.php/admin/authentication/sa/login');
+            $basePath = preg_split("/\/pluginmanager/", $_SERVER['REQUEST_URI']);
+            $this->set('redirectURL', $baseURL . $basePath[0] . "/authentication/sa/login");
         }
 
         public function beforeLogin(){
