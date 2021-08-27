@@ -1,5 +1,8 @@
 # AuthOpenIDConnect - LimeSurvey Auth Plugin
 
+## Disclaimer
+This plugin is not actively maintained.
+
 ## Install
 
 1. Download the plugin.
