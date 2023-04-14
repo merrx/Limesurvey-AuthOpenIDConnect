@@ -1,12 +1,11 @@
 # AuthOpenIDConnect - LimeSurvey Auth Plugin
 
 ## Disclaimer
-This plugin is **not maintained** by me anymore.\
-Feel free to create a fork if you would like to customize it.
+Original plugin by https://github.com/janmenzel
+update by olicha@worteks
 
-I am really grateful for your pull requests, but as I am not working with PHP and Limesurvey anymore I can't test them and ensure that everything works fine after a merge.
-
-If you would like to continue to maintain this project please open an issue to get in touch with me. ☺
+## Updates
+added scope to the OpenIDConnectClient
 
 ## Install
 
