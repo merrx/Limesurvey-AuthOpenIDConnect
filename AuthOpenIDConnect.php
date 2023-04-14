@@ -66,20 +66,20 @@
 
             $oidc = new OpenIDConnectClient($providerURL, $clientID, $clientSecret);
             $oidc->setRedirectURL($redirectURL);
+            $oidc->addScope(array('openid', 'profile', 'email'));
             
             if(isset($_REQUEST['error'])){
                 return;
             }
-
             try {
                 if($oidc->authenticate()){
                     $username = $oidc->requestUserInfo('preferred_username');
                     $email = $oidc->requestUserInfo('email');
                     $givenName = $oidc->requestUserInfo('given_name');
                     $familyName = $oidc->requestUserInfo('family_name');
+                    
     
                     $user = $this->api->getUserByName($username);
-    
                     if(empty($user)){
                         $user = new User;
                         $user->users_name = $username;
