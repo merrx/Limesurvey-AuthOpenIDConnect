@@ -3,10 +3,10 @@
 ## Disclaimer
 Original plugin by https://github.com/janmenzel
 
-update by olicha@worteks
+updated by olicha@worteks
 
 ## Updates
-added scope to the OpenIDConnectClient
+updated the compatibility in the config.xml file
 
 ## Install
 
