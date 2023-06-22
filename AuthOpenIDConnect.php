@@ -27,6 +27,24 @@
                 'help' => 'Required',
                 'default' => ''
             ],
+            'userRole1' => [
+                'type' => 'string',
+                'label' => 'User Role #1',
+                'help' => 'Required - group name and user role seperated by a comma "," ',
+                'default' => ''
+            ],
+            'userRole2' => [
+                'type' => 'string',
+                'label' => 'User Role #2',
+                'help' => 'Optionnal - group name and user role seperated by a comma "," ',
+                'default' => ''
+            ],
+            'userRole3' => [
+                'type' => 'string',
+                'label' => 'User Role 3#',
+                'help' => 'Optionnal - group name and user role seperated by a comma "," ',
+                'default' => ''
+            ],
             'redirectURL' => [
                 'type' => 'string',
                 'label' => 'Redirect URL',
