@@ -27,23 +27,10 @@
                 'help' => 'Required',
                 'default' => ''
             ],
-            'userRole1' => [
-                'type' => 'string',
-                'label' => 'User Role #1',
-                'help' => 'Required - group name and user role seperated by a comma "," ',
-                'default' => ''
-            ],
-            'userRole2' => [
-                'type' => 'string',
-                'label' => 'User Role #2',
-                'help' => 'Optionnal - group name and user role seperated by a comma "," ',
-                'default' => ''
-            ],
-            'userRole3' => [
-                'type' => 'string',
-                'label' => 'User Role 3#',
-                'help' => 'Optionnal - group name and user role seperated by a comma "," ',
-                'default' => ''
+            'roleMapping' => [
+                'type' => 'text',
+                'label' => 'User Role Mapping',
+                'help' => 'User role mapping. Each line is a mapping separated by a =. Left the the OIDC group name, right limesurvey role name.'
             ],
             'redirectURL' => [
                 'type' => 'string',
@@ -66,9 +53,8 @@
         }
 
         public function beforeActivate(){
-            $baseURL = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}";
-            $basePath = preg_split("/\/pluginmanager/", $_SERVER['REQUEST_URI']);
-            $this->set('redirectURL', $baseURL . $basePath[0] . "/authentication/sa/login");
+            $redirectURL = \Yii::app()->getController()->createAbsoluteUrl("admin/authentication/sa/login");
+            $this->set('redirectURL', $redirectURL);
         }
 
         public function beforeLogin(){
@@ -92,37 +78,32 @@
             try {
                 if($oidc->authenticate()){
                     $username = $oidc->requestUserInfo('preferred_username');
-                    $email = $oidc->requestUserInfo('email');
-                    $givenName = $oidc->requestUserInfo('given_name');
-                    $familyName = $oidc->requestUserInfo('family_name');
-                    
     
                     $user = $this->api->getUserByName($username);
                     if(empty($user)){
                         $user = new User;
                         $user->users_name = $username;
                         $user->setPassword(createPassword());
-                        $user->full_name = $givenName.' '.$familyName;
                         $user->parent_id = 1;
                         $user->lang = $this->api->getConfigKey('defaultlang', 'en');
-                        $user->email = $email;
-        
+                        
                         if(!$user->save()){
                             // Couldn't create user, navigate to authdb login.
                             return;
                         }
                         // User successfully created.
                     }
+                    $this->updateUser($user, $oidc);
     
                     $this->setUsername($user->users_name);
                     $this->setAuthPlugin();
                     return;
                 }
             } catch (\Throwable $error) {
+                var_dump($error); die();
                 // Error occurred during authentication process, redirect to authdb login.
                 return;
             }
-            
         }
         
         public function newUserSession(){
@@ -143,6 +124,48 @@
 
         public function afterLogout(){
             Yii::app()->getRequest()->redirect('/', true, 302);
+        }
+
+        protected function updateUser(User $user, OpenIDConnectClient $oidc) {
+            $email = $oidc->requestUserInfo('email');
+            $givenName = $oidc->requestUserInfo('given_name');
+            $familyName = $oidc->requestUserInfo('family_name');        
+            $groups = $oidc->requestUserInfo('groups');
+            
+            $user->full_name = trim(implode(' ', [$givenName, $familyName]));
+            $user->email = $email;
+            $this->setUserRoles($user, $groups);
+            $user->save();
+        }
+
+        protected function setUserRoles(User $user, array $groups) {
+            UserInPermissionrole::model()->deleteAll(
+                "uid = :uid",
+                [":uid" => $user->uid]
+            );
+            $roleMapping = $this->get('roleMapping');
+            $roleMapping = explode("\n", $roleMapping);
+            foreach ($roleMapping as $mapping) {
+                if (str_contains($mapping, '=')) {
+                    [$group, $roleName] = array_map('trim', explode('=', $mapping));
+                    if (in_array($group, $groups)) {
+                        $this->addUserToRole($user, $roleName);
+                    }
+                }
+            }
+        }
+
+        protected function addUserToRole(User $user, string $roleName) {
+            $roles = Permissiontemplates::model()->findAllByAttributes(['name' => $roleName]);
+            if (safecount($roles) == 0) {
+                return;
+            }
+            foreach ($roles as $role) {
+                $oModel = new UserInPermissionrole;
+                $oModel->ptid = $role->ptid;
+                $oModel->uid = $user->uid;
+                $oModel->save();
+            }
         }
     }
 ?>
