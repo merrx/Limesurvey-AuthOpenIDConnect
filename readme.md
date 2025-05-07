@@ -3,10 +3,11 @@
 ## Disclaimer
 Original plugin by https://github.com/janmenzel
 
-updated by olicha@worteks
+updated by olicha@worteks, Philipp Seßner, Merrx
 
 ## Updates
-updated the compatibility in the config.xml file
+* updated the compatibility in the config.xml file
+* add ?noAuthOpenIDConnect=true to bypass SSO and get authDb
 
 ## Install
 
