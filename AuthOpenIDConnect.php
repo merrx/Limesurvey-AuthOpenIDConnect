@@ -78,7 +78,8 @@ class AuthOpenIDConnect extends AuthPluginBase {
         }
         try {
             if($oidc->authenticate()){
-                $username = $oidc->requestUserInfo('preferred_username');
+                $user_data = $oidc->requestUserInfo();
+                $username = $user_data->preferred_username;
 
                 $user = $this->api->getUserByName($username);
                 if(empty($user)){
@@ -127,11 +128,11 @@ class AuthOpenIDConnect extends AuthPluginBase {
         Yii::app()->getRequest()->redirect('/', true, 302);
     }
 
-    protected function updateUser(User $user, OpenIDConnectClient $oidc) {
-        $email = $oidc->requestUserInfo('email');
-        $givenName = $oidc->requestUserInfo('given_name');
-        $familyName = $oidc->requestUserInfo('family_name');
-        $groups = $oidc->requestUserInfo('groups');
+    protected function updateUser(User $user, mixed $user_data) {
+        $email = $user_data->email;
+        $givenName = $user_data->given_name;
+        $familyName = $user_data->family_name;
+        $groups = $user_data->groups;
 
         $user->full_name = trim(implode(' ', [$givenName, $familyName]));
         $user->email = $email;
