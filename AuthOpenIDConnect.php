@@ -86,6 +86,7 @@ class AuthOpenIDConnect extends AuthPluginBase {
                     $user = new User;
                     $user->users_name = $username;
                     $user->setPassword(createPassword());
+                    $user->email = $user_data->email;
                     $user->parent_id = 1;
                     $user->lang = $this->api->getConfigKey('defaultlang', 'en');
 
