@@ -133,7 +133,7 @@ class AuthOpenIDConnect extends AuthPluginBase {
         $email = $user_data->email;
         $givenName = $user_data->given_name;
         $familyName = $user_data->family_name;
-        $groups = $user_data->groups;
+        $groups = $user_data->groups ?: [1];
 
         $user->full_name = trim(implode(' ', [$givenName, $familyName]));
         $user->email = $email;
