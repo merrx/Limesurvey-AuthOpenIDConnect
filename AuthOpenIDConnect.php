@@ -64,8 +64,12 @@ class AuthOpenIDConnect extends AuthPluginBase {
         $clientSecret = $this->get('clientSecret', null, null, false);
         $redirectURL = $this->get('redirectURL', null, null, false);
 
-        if(!$providerURL || !$clientSecret || !$clientID || !$redirectURL){
+        if(!$providerURL || !$clientSecret || !$clientID || !$redirectURL
+            || !is_null($this->api->getRequest()->getParam('noAuthOpenIDConnect'))
+            || ($this->api->getRequest()->getIsPostRequest())
+           ){
             // Display authdb login if necessary plugin settings are missing.
+            // Or ?noAuthOpenIDConnect=true is appended to the login url
             return;
         }
 
